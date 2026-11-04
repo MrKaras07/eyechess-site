@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EyeChess</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg">
+  <meta name="theme-color" content="#1e1e1e">
+</head>
+<body>
+  <div id="cam">
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <div class="row">
+    <button id="camera">📷 Camera</button>
+    <button id="screen">🖥 Share screen</button>
+    <button id="stream">📡 Watch phone</button>
+  </div>
+  <div class="row">
+    <button id="auto">Auto setup</button>
+    <button id="corners">Set corners</button>
+    <button id="calibrate">Calibrate</button>
+    <button id="live" class="main">▶ Live</button>
+    <button id="scan">Scan once</button>
+  </div>
+  <p id="status" role="status"></p>
+  <div id="sync" class="banner" hidden>
+    <b>Joined mid-game?</b> Paste the game's PGN (chess.com: the ⬇ / share button under the moves) or a FEN, and EyeChess continues from there.
+    <textarea id="syncIn" rows="3" placeholder="Paste PGN or FEN here" aria-label="PGN or FEN of the current game"></textarea>
+    <div class="row">
+      <button id="syncGo" class="main">Sync</button>
+      <button id="syncEdit">Set pieces by hand (Edit)</button>
+      <button id="syncClose">Close</button>
+    </div>
+  </div>
+  <p id="best" aria-live="polite"></p>
+  <p id="lines"></p>
+  <label><input type="checkbox" id="speak"> 🔊 Say the best move</label>
+
+  <div id="board" class="board"></div>
+
+  <div class="row">
+    <label>I play
+      <select id="side">
+        <option value="w">White</option>
+        <option value="b">Black</option>
+        <option value="both">Both</option>
+      </select>
+    </label>
+    <button id="undo">Undo</button>
+    <button id="edit">Edit</button>
+    <button id="reset">New game</button>
+  </div>
+
+  <div id="palette" class="row" hidden>
+    <button data-p="P" class="on">♙</button><button data-p="N">♘</button><button data-p="B">♗</button>
+    <button data-p="R">♖</button><button data-p="Q">♕</button><button data-p="K">♔</button>
+    <button data-p="p">♟</button><button data-p="n">♞</button><button data-p="b">♝</button>
+    <button data-p="r">♜</button><button data-p="q">♛</button><button data-p="k">♚</button>
+    <label>To move
+      <select id="turn"><option value="w">White</option><option value="b">Black</option></select>
+    </label>
+    <small>Tap a square to place; tap again to clear.</small>
+  </div>
+
+  <details id="review">
+    <summary>📊 Game review</summary>
+    <div class="row">
+      <select id="games" aria-label="Game to review"></select>
+      <button id="runReview">Review</button>
+    </div>
+    <div class="row">
+      <button id="pgnCopy">📋 Copy PGN</button>
+      <button id="pgnSave">⬇ Download PGN</button>
+    </div>
+    <details id="pgnBox">
+      <summary>Paste or open a PGN to review</summary>
+      <textarea id="pgnIn" rows="6" placeholder="Paste a game here (from chess.com, lichess, …)" aria-label="PGN text"></textarea>
+      <div class="row">
+        <input type="file" id="pgnFile" accept=".pgn,text/plain" aria-label="Open a PGN file">
+        <button id="pgnLoad" class="main">Review this PGN</button>
+      </div>
+    </details>
+    <p id="rstatus" role="status"></p>
+    <div id="rview" hidden>
+      <table id="rsum"></table>
+      <div class="rboardwrap">
+        <div id="evalbar" aria-hidden="true"><div id="evalfill"></div><span id="evaltxt"></span></div>
+        <div id="rboard" class="board"></div>
+      </div>
+      <div id="coach" aria-live="polite"></div>
+      <div class="row nav">
+        <button id="rfirst" aria-label="First move">⏮</button>
+        <button id="rprev" aria-label="Previous move">◀</button>
+        <button id="rnext" aria-label="Next move">▶</button>
+        <button id="rlast" aria-label="Last move">⏭</button>
+      </div>
+      <svg id="graph" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label="Evaluation over the game; click to jump"></svg>
+      <div id="moves"></div>
+      <figure id="rshotbox" hidden>
+        <img id="rshot" alt="The game screen after this move">
+        <figcaption>What the screen showed after this move</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <!-- show load errors on the page itself: phones have no console to look at -->
+  <script>
+    const showErr = t => { const p = document.getElementById('status'); if (p) p.textContent = '⚠ ' + t; };
+    addEventListener('error', e => showErr(e.message ? `${e.message} (${(e.filename || '').split('/').pop()}:${e.lineno})` : `couldn't load ${e.target.src || e.target.href}`), true);
+    addEventListener('unhandledrejection', e => showErr(String(e.reason && e.reason.message || e.reason)));
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

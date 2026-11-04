@@ -1,0 +1,10 @@
+{
+  "name": "EyeChess",
+  "short_name": "EyeChess",
+  "description": "Reads a chessboard from your camera or screen and shows the best move.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1e1e1e",
+  "theme_color": "#1e1e1e",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
